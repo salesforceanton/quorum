@@ -1,4 +1,4 @@
-module github.com/ethereum/go-ethereum/v24
+module github.com/salesforceanton/quorum/v24
 
 go 1.20
 
