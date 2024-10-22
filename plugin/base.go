@@ -276,6 +276,10 @@ func (ld *logDelegate) ResetNamed(name string) hclog.Logger {
 func (ld *logDelegate) SetLevel(level hclog.Level) {
 }
 
+func (ld *logDelegate) GetLevel() hclog.Level {
+	return hclog.Level(1)
+}
+
 func (*logDelegate) StandardLogger(opts *hclog.StandardLoggerOptions) *slog.Logger {
 	return nil
 }
