@@ -67,7 +67,7 @@ func (t *tesseraPrivateTxManager) submitJSON(method, path string, request interf
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		body, _ := ioutil.ReadAll(res.Body)
-		return res.StatusCode, fmt.Errorf("%d status: %s", res.StatusCode, string(body))
+		return res.StatusCode, fmt.Errorf("%d status: %s, method:%s, path:%s. Cause: %v", res.StatusCode, string(body), method, path, err)
 	}
 	if err := json.NewDecoder(res.Body).Decode(response); err != nil {
 		return res.StatusCode, fmt.Errorf("unable to decode response body for (method:%s,path:%s). Cause: %v", method, path, err)
