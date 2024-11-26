@@ -276,6 +276,7 @@ func (c *BoundContract) transact(opts *TransactOpts, contract *common.Address, i
 		var payload []byte
 		hash, err := c.transactor.PreparePrivateTransaction(rawTx.Data(), opts.PrivateFrom)
 		if err != nil {
+			fmt.Printf("transactor.PreparePrivateTransaction error:%v, privateFrom:%s", err, opts.PrivateFrom)
 			return nil, err
 		}
 		payload = hash.Bytes()
