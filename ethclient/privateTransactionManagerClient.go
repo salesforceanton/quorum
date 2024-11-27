@@ -46,7 +46,9 @@ func (pc *privateTransactionManagerDefaultClient) StoreRaw(data []byte, privateF
 		Payload: base64.StdEncoding.EncodeToString(data),
 		From:    privateFrom,
 	}
-	fmt.Printf("storeRawReq: %v", storeRawReq)
+	fmt.Printf("storeRawReq.Payload: %s", storeRawReq.Payload)
+	fmt.Printf("storeRawReq.From: %s", storeRawReq.From)
+
 	reqBodyBuf := new(bytes.Buffer)
 	if err := json.NewEncoder(reqBodyBuf).Encode(storeRawReq); err != nil {
 		return common.EncryptedPayloadHash{}, err
