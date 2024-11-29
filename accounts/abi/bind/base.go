@@ -249,7 +249,6 @@ func (c *BoundContract) transact(opts *TransactOpts, contract *common.Address, i
 		// Gas estimation cannot succeed without code for method invocations
 		if contract != nil {
 			if code, err := c.transactor.PendingCodeAt(ensureContext(opts.Context), c.address); err != nil {
-				fmt.Printf("transactor.PendingCodeAt error:%v", err)
 				return nil, err
 			} else if len(code) == 0 {
 				return nil, ErrNoCode
@@ -277,7 +276,6 @@ func (c *BoundContract) transact(opts *TransactOpts, contract *common.Address, i
 		var payload []byte
 		hash, err := c.transactor.PreparePrivateTransaction(rawTx.Data(), opts.PrivateFrom)
 		if err != nil {
-			fmt.Printf("transactor.PreparePrivateTransaction error:%v, privateFrom:%s", err, opts.PrivateFrom)
 			return nil, err
 		}
 		payload = hash.Bytes()
@@ -295,14 +293,12 @@ func (c *BoundContract) transact(opts *TransactOpts, contract *common.Address, i
 	}
 	signedTx, err := opts.Signer(opts.From, rawTx)
 	if err != nil {
-		fmt.Printf("opts.Signer error:%v", err)
 		return nil, err
 	}
 	if opts.NoSend {
 		return signedTx, nil
 	}
 	if err := c.transactor.SendTransaction(ensureContext(opts.Context), signedTx, PrivateTxArgs{PrivateFor: opts.PrivateFor}); err != nil {
-		fmt.Printf("transactor.SendTransaction error:%v, privateFrom:%s", err, opts.PrivateFrom)
 		return nil, err
 	}
 	return signedTx, nil
