@@ -34,6 +34,7 @@ type ABI struct {
 	Constructor Method
 	Methods     map[string]Method
 	Events      map[string]Event
+	Errors      map[string]Error
 
 	// Additional "special" functions introduced in solidity v0.6.0.
 	// It's separated from the original default fallback. Each contract
@@ -157,6 +158,7 @@ func (abi *ABI) UnmarshalJSON(data []byte) error {
 	}
 	abi.Methods = make(map[string]Method)
 	abi.Events = make(map[string]Event)
+	abi.Errors = make(map[string]Error)
 	for _, field := range fields {
 		switch field.Type {
 		case "constructor":
@@ -184,6 +186,10 @@ func (abi *ABI) UnmarshalJSON(data []byte) error {
 		case "event":
 			name := abi.overloadedEventName(field.Name)
 			abi.Events[name] = NewEvent(name, field.Name, field.Anonymous, field.Inputs)
+		case "error":
+			// Errors cannot be overloaded or overridden but are inherited,
+			// no need to resolve the name conflict here.
+			abi.Errors[field.Name] = NewError(field.Name, field.Inputs)
 		default:
 			return fmt.Errorf("abi: could not recognize type %v of field %v", field.Type, field.Name)
 		}
@@ -244,6 +250,17 @@ func (abi *ABI) EventByID(topic common.Hash) (*Event, error) {
 		}
 	}
 	return nil, fmt.Errorf("no event with id: %#x", topic.Hex())
+}
+
+// ErrorByID looks up an error by the 4-byte id,
+// returns nil if none found.
+func (abi *ABI) ErrorByID(sigdata [4]byte) (*Error, error) {
+	for _, errABI := range abi.Errors {
+		if bytes.Equal(errABI.ID[:4], sigdata[:]) {
+			return &errABI, nil
+		}
+	}
+	return nil, fmt.Errorf("no error with id: %#x", sigdata[:])
 }
 
 // HasFallback returns an indicator whether a fallback function is included.
